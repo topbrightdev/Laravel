@@ -78,9 +78,8 @@ class Schema implements \Reliese\Meta\Schema
      */
     protected function fetchTables($schema)
     {
-        $rows = $this->connection->select('SHOW FULL TABLES FROM '.$schema.' WHERE Table_type=\'BASE TABLE\'');
-        $names = array_column($rows, 'Tables_in_'.$schema);
-        $tables = Arr::flatten($names);
+        $rows = $this->connection->select('SHOW TABLES FROM '.$this->wrap($schema));
+        $tables = Arr::flatten($rows);
 
         return array_diff($tables, [
             'migrations',
@@ -92,7 +91,7 @@ class Schema implements \Reliese\Meta\Schema
      */
     protected function fillColumns(Blueprint $blueprint)
     {
-        $rows = $this->connection->select('SHOW FULL COLUMNS FROM '.$blueprint->qualifiedTable());
+        $rows = $this->connection->select('SHOW FULL COLUMNS FROM '.$this->wrap($blueprint->qualifiedTable()));
         foreach ($rows as $column) {
             $blueprint->withColumn(
                 $this->parseColumn($column)
@@ -115,7 +114,7 @@ class Schema implements \Reliese\Meta\Schema
      */
     protected function fillConstraints(Blueprint $blueprint)
     {
-        $row = $this->connection->select('SHOW CREATE TABLE '.$blueprint->qualifiedTable());
+        $row = $this->connection->select('SHOW CREATE TABLE '.$this->wrap($blueprint->qualifiedTable()));
         $row = array_change_key_case($row[0]);
         $sql = $row['create table'];
         $sql = str_replace('`', '', $sql);
@@ -200,6 +199,22 @@ class Schema implements \Reliese\Meta\Schema
     protected function columnize($columns)
     {
         return array_map('trim', explode(',', $columns));
+    }
+
+    /**
+     * Wrap within backticks
+     *
+     * @param string $table
+     *
+     * @return string
+     */
+    protected function wrap($table)
+    {
+        $pieces = explode('.', str_replace('`', '', $table));
+
+        return implode('.', array_map(function ($piece) {
+            return "`$piece`";
+        }, $pieces));
     }
 
     /**
