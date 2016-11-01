@@ -78,8 +78,9 @@ class Schema implements \Reliese\Meta\Schema
      */
     protected function fetchTables($schema)
     {
-        $rows = $this->connection->select('SHOW TABLES FROM '.$this->wrap($schema));
-        $tables = Arr::flatten($rows);
+        $rows = $this->connection->select('SHOW FULL TABLES FROM '.$this->wrap($schema).' WHERE Table_type="BASE TABLE"');
+        $names = array_column($rows, 'Tables_in_'.$schema);
+        $tables = Arr::flatten($names);
 
         return array_diff($tables, [
             'migrations',
@@ -202,7 +203,7 @@ class Schema implements \Reliese\Meta\Schema
     }
 
     /**
-     * Wrap within backticks
+     * Wrap within backticks.
      *
      * @param string $table
      *
