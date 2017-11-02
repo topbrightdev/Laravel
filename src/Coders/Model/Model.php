@@ -652,7 +652,7 @@ class Model
      */
     public function needsTableName()
     {
-        return $this->shouldRemoveTablePrefix() || $this->blueprint->table() != Str::plural($this->getRecordName()) ||
+        return false===$this->shouldQualifyTableName() || $this->shouldRemoveTablePrefix() || $this->blueprint->table() != Str::plural($this->getRecordName()) ||
                $this->shouldQualifyTableName();
     }
 
@@ -1107,14 +1107,6 @@ class Model
     public function usesBaseFiles()
     {
         return $this->config('base_files', false);
-    }
-
-    /**
-     * @return int
-     */
-    public function indentWithSpace()
-    {
-        return (int) $this->config('indent_with_space', 0);
     }
 
     /**
