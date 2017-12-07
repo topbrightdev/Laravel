@@ -8,12 +8,12 @@
 namespace Reliese\Coders\Model;
 
 use Carbon\Carbon;
-use Illuminate\Database\DatabaseManager;
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Reliese\Meta\Blueprint;
-use Reliese\Meta\SchemaManager;
 use Reliese\Support\Classify;
+use Reliese\Meta\SchemaManager;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Database\DatabaseManager;
 
 class Factory
 {
@@ -114,7 +114,7 @@ class Factory
         $mapper = $this->makeSchema($schema);
 
         foreach ($mapper->tables() as $blueprint) {
-            if ($this->shouldTakeOnly($blueprint) && $this->shouldNotExclude($blueprint)) {
+            if ($this->shouldNotExclude($blueprint)) {
                 $this->create($mapper->schema(), $blueprint->table());
             }
         }
@@ -131,26 +131,6 @@ class Factory
             if (Str::is($pattern, $blueprint->table())) {
                 return false;
             }
-        }
-
-        return true;
-    }
-
-    /**
-     * @param \Reliese\Meta\Blueprint $blueprint
-     *
-     * @return bool
-     */
-    protected function shouldTakeOnly(Blueprint $blueprint)
-    {
-        if ($patterns = $this->config($blueprint, 'only', [])) {
-            foreach ($patterns as $pattern) {
-                if (Str::is($pattern, $blueprint->table())) {
-                    return true;
-                }
-            }
-
-            return false;
         }
 
         return true;
@@ -203,7 +183,6 @@ class Factory
 
     /**
      * @param \Reliese\Coders\Model\Model $model
-     *
      * @todo: Delegate workload to SchemaManager and ModelManager
      *
      * @return array
@@ -233,7 +212,6 @@ class Factory
      * @param string $name
      *
      * @return string
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     protected function prepareTemplate(Model $model, $name)
     {
@@ -251,7 +229,6 @@ class Factory
      */
     protected function fillTemplate($template, Model $model)
     {
-        $template = str_replace('{{date}}', Carbon::now()->toRssString(), $template);
         $template = str_replace('{{namespace}}', $model->getBaseNamespace(), $template);
         $template = str_replace('{{parent}}', $model->getParentClass(), $template);
         $template = str_replace('{{properties}}', $this->properties($model), $template);
@@ -392,6 +369,7 @@ class Factory
 
     /**
      * @param \Reliese\Coders\Model\Model $model
+     *
      * @param array $custom
      *
      * @return string
@@ -429,8 +407,6 @@ class Factory
 
     /**
      * @param \Reliese\Coders\Model\Model $model
-     *
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     protected function createUserFile(Model $model)
     {
