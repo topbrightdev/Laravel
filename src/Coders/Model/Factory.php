@@ -7,13 +7,12 @@
 
 namespace Reliese\Coders\Model;
 
-use Carbon\Carbon;
-use Illuminate\Database\DatabaseManager;
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Reliese\Meta\Blueprint;
-use Reliese\Meta\SchemaManager;
 use Reliese\Support\Classify;
+use Reliese\Meta\SchemaManager;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Database\DatabaseManager;
 
 class Factory
 {
@@ -251,7 +250,6 @@ class Factory
      */
     protected function fillTemplate($template, Model $model)
     {
-        $template = str_replace('{{date}}', Carbon::now()->toRssString(), $template);
         $template = str_replace('{{namespace}}', $model->getBaseNamespace(), $template);
         $template = str_replace('{{parent}}', $model->getParentClass(), $template);
         $template = str_replace('{{properties}}', $this->properties($model), $template);
