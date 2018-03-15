@@ -6,7 +6,7 @@
 
 namespace {{namespace}};
 
-{{imports}}
+use {{parent}} as Eloquent;
 
 /**
  * Class {{class}}
@@ -14,7 +14,7 @@ namespace {{namespace}};
  *
  * @package {{namespace}}
  */
-class {{class}} extends {{parent}}
+class {{class}} extends Eloquent
 {
 {{body}}
 }
