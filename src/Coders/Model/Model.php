@@ -404,25 +404,6 @@ class Model
     }
 
     /**
-     * @return bool
-     */
-    public function shouldPluralizeTableName()
-    {
-        $pluralize = (bool)$this->config('pluralize', true);
-
-        $overridePluralizeFor = $this->config('override_pluralize_for', []);
-        if (count($overridePluralizeFor) > 0) {
-            foreach ($overridePluralizeFor as $except) {
-                if ($except == $this->getTable()) {
-                    return !$pluralize;
-                }
-            }
-        }
-
-        return $pluralize;
-    }
-
-    /**
      * @param \Reliese\Meta\Blueprint[] $references
      */
     public function withReferences($references)
@@ -513,10 +494,7 @@ class Model
      */
     public function getRecordName()
     {
-        if ($this->shouldPluralizeTableName()) {
-            return Str::singular($this->removeTablePrefix($this->blueprint->table()));
-        }
-        return $this->removeTablePrefix($this->blueprint->table());
+        return Str::singular($this->removeTablePrefix($this->blueprint->table()));
     }
 
     /**
@@ -696,10 +674,8 @@ class Model
      */
     public function needsTableName()
     {
-        return false === $this->shouldQualifyTableName() ||
-            $this->shouldRemoveTablePrefix() ||
-            $this->blueprint->table() != Str::plural($this->getRecordName()) ||
-            !$this->shouldPluralizeTableName();
+        return false === $this->shouldQualifyTableName() || $this->shouldRemoveTablePrefix() || $this->blueprint->table() != Str::plural($this->getRecordName()) ||
+               $this->shouldQualifyTableName();
     }
 
     /**
