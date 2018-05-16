@@ -423,14 +423,6 @@ class Model
     }
 
     /**
-     * @return bool
-     */
-    public function shouldLowerCaseTableName()
-    {
-        return (bool)$this->config('lower_table_name_first', false);
-    }
-
-    /**
      * @param \Reliese\Meta\Blueprint[] $references
      */
     public function withReferences($references)
@@ -509,7 +501,7 @@ class Model
      */
     public function getClassName()
     {
-        if ($this->shouldLowerCaseTableName()) {
+        if ($this->config('lower_table_name_first', false)) {
             return Str::studly(Str::lower($this->getRecordName()));
         }
 
