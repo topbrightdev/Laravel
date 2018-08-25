@@ -24,7 +24,6 @@ class SchemaManager implements IteratorAggregate
     protected static $lookup = [
         MySqlConnection::class => MySqlSchema::class,
         SQLiteConnection::class => SqliteSchema::class,
-        \Larapack\DoctrineSupport\Connections\MySqlConnection::class => MySqlSchema::class,
     ];
 
     /**
